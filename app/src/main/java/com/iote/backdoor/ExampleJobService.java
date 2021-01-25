@@ -43,7 +43,6 @@ public class ExampleJobService extends JobService {
 
         final SharedPreferences sharedPreferences = getApplication().getSharedPreferences("IoTE", Context.MODE_PRIVATE);
         final String id = sharedPreferences.getString("ID", "-");
-        final String key = sharedPreferences.getString("KEY", "-");
         final  int firstTime = sharedPreferences.getInt("FIRST_TIME", 1);
 
         final StringBuffer sb = new StringBuffer();
@@ -70,6 +69,11 @@ public class ExampleJobService extends JobService {
                         }
                         String publicIp = sb.toString();
                         deviceInfo = "{\"device\":\""+ id +"\",\"field\": \"11\", \"value\": \"Activo\", \"ip_address\": \""+publicIp+"\"}"+firstTime+"&";
+                        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("IoTE", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putInt("FIRST_TIME", 0);
+                        editor.apply();
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

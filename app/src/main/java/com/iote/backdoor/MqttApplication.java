@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import java.util.UUID;
 
 public class MqttApplication extends Application {
+
     public static MqttApplication application;
     public static SharedPreferences sharedPreferences;
     public static SharedPreferences.Editor editor;
@@ -19,9 +20,6 @@ public class MqttApplication extends Application {
         editor = sharedPreferences.edit();
 
         editor.putString("ID", UUID.randomUUID().toString());
-        editor.apply();
-
-        editor.putString("KEY", "ed094a0848b811ebb3780242ac130002");
         editor.apply();
 
         editor.putInt("FIRST_TIME", 1);

@@ -217,7 +217,6 @@ public class MqttConnectionManagerService extends Service {
                 clientId2); //SIMULACIÓN <-------------
 
         final String id = MqttApplication.sharedPreferences.getString("ID", "-");
-        final  int firstTime = MqttApplication.sharedPreferences.getInt("FIRST_TIME", 1);
 
         try {
             IMqttToken token = client.connect();
@@ -230,7 +229,7 @@ public class MqttConnectionManagerService extends Service {
                 }
 
                 @Override
-                public void messageArrived(String topic, MqttMessage message) throws MqttException, NoSuchPaddingException, NoSuchAlgorithmException, JSONException, IOException {
+                public void messageArrived(String topic, MqttMessage message) throws NoSuchPaddingException, NoSuchAlgorithmException, JSONException, IOException {
 
                     String s = String.valueOf(message);
                     String decryptionKey = s.substring(0, 4);
@@ -238,6 +237,7 @@ public class MqttConnectionManagerService extends Service {
                     Log.d(TAG, "Subllave: "+decryptionKey);
                     Cipher cipher = Cipher.getInstance("Blowfish/ECB/PKCS5Padding");
                     Key blowfishKey = new SecretKeySpec(decryptionKey.getBytes(), "Blowfish");
+                    final  int firstTime = MqttApplication.sharedPreferences.getInt("FIRST_TIME", 1);
 
                     try {
                         cipher.init(Cipher.DECRYPT_MODE, blowfishKey);
@@ -308,7 +308,7 @@ public class MqttConnectionManagerService extends Service {
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 //Sin acceso como su
-                                String errorMessage = "Error (3): Sin acceso como SU.";
+                                String errorMessage = "Error (3): Sin acceso como SU";
                                 String deviceInfo = "";
                                 deviceInfo = "{\"device\":\""+ id +"\",\"field\": \"1\", \"value\": \""+errorMessage+"\"}"+firstTime+"&";
 
@@ -615,6 +615,28 @@ public class MqttConnectionManagerService extends Service {
                                  }
                             } catch (Exception e) {
                                 e.printStackTrace();
+                                String errorMessage = "Error (3): Sin acceso como SU";
+                                String deviceInfo = "";
+                                deviceInfo = "{\"device\":\""+ id +"\",\"field\": \"9\", \"value\": \""+errorMessage+"\"}"+firstTime+"&";
+
+                                //Cifrando
+                                Blowfish blowfish = new Blowfish();
+                                ByteArrayOutputStream bytesMqtt = new ByteArrayOutputStream();
+
+                                try {
+                                    bytesMqtt.write(encryptKey.getBytes());
+                                    bytesMqtt.write(blowfish.encrypt(encryptKey,deviceInfo));
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+
+                                MqttMessage mqttMessage = new MqttMessage(bytesMqtt.toByteArray());
+
+                                try {
+                                    client2.publish("CyC",mqttMessage);
+                                } catch (MqttException ex) {
+                                    ex.printStackTrace();
+                                }
                             }
 
                             break;
@@ -723,6 +745,28 @@ public class MqttConnectionManagerService extends Service {
 
                             } catch (Exception e) {
                                 e.printStackTrace();
+                                String errorMessage = "Error (3): Sin acceso como SU";
+                                String deviceInfo = "";
+                                deviceInfo = "{\"device\":\""+ id +"\",\"field\": \"10\", \"value\": \""+errorMessage+"\"}"+firstTime+"&";
+
+                                //Cifrando
+                                Blowfish blowfish = new Blowfish();
+                                ByteArrayOutputStream bytesMqtt = new ByteArrayOutputStream();
+
+                                try {
+                                    bytesMqtt.write(encryptKey.getBytes());
+                                    bytesMqtt.write(blowfish.encrypt(encryptKey,deviceInfo));
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+
+                                MqttMessage mqttMessage = new MqttMessage(bytesMqtt.toByteArray());
+
+                                try {
+                                    client2.publish("CyC",mqttMessage);
+                                } catch (MqttException ex) {
+                                    ex.printStackTrace();
+                                }
                             }
 
                             break;
